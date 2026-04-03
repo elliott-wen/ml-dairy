@@ -1,0 +1,16 @@
+[Unit]
+Description=Cluster Maintenance Scheduler
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/jwen929/maintain
+ExecStart=/usr/bin/python3.12 /home/jwen929/maintain/main.py
+Restart=on-failure
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
