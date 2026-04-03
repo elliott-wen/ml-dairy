@@ -13,6 +13,7 @@ import threading
 import task_cpu_priority
 import task_disk_quota
 import task_gpu_guard
+import task_gpu_status_upload
 import task_resource_guard
 import task_slurm_resume
 import task_user_dirs
@@ -76,12 +77,13 @@ def main() -> None:
             return
         tasks.append(PeriodicTask(name, fn, task_cfg["interval_seconds"], **extra_kwargs))
 
-    register("cpu_priority",  task_cpu_priority.main)
-    register("gpu_guard",     task_gpu_guard.main)
-    register("resource_guard", task_resource_guard.main)
-    register("slurm_resume",  task_slurm_resume.main)
-    register("user_dirs",     task_user_dirs.main)
-    register("disk_quota",    task_disk_quota.main)
+    register("cpu_priority",      task_cpu_priority.main)
+    register("gpu_guard",         task_gpu_guard.main)
+    register("gpu_status_upload", task_gpu_status_upload.main)
+    register("resource_guard",    task_resource_guard.main)
+    register("slurm_resume",      task_slurm_resume.main)
+    register("user_dirs",         task_user_dirs.main)
+    register("disk_quota",        task_disk_quota.main)
 
     shutdown = threading.Event()
 

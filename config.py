@@ -53,6 +53,18 @@ TASK_CONFIG = {
         "interval_seconds": 60,
     },
 
+    # ── GPU status upload ────────────────────────────────────────────────────
+    # Collects per-GPU utilisation and per-user process info, then POSTs to
+    # the monitoring endpoint.
+    "gpu_status_upload": {
+        "enabled":          True,
+        "interval_seconds": 60,
+        # Optional overrides (defaults match the original script):
+        # "endpoint": "https://ml.elliottwen.info/gpu",
+        # "app_id":   "4a3e71af60a8e2b364941b6b58037dca",
+        # "proxy":    "http://squid.auckland.ac.nz:3128",
+    },
+
     # ── Disk quotas ──────────────────────────────────────────────────────────
     # Applies XFS quotas per mount point. Admins get admin_quota on all mounts.
     # Per-user overrides take precedence over mount_quotas defaults.
