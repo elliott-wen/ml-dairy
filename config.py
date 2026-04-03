@@ -68,6 +68,9 @@ TASK_CONFIG = {
         # Per-user overrides: {username: {mount: (soft, hard)}}
         "user_overrides": {
             "yma391": {"/data": ("1t", "1t")},
+            "zwna875": {"/data": ("1t", "1t")},
+            "tbai869": {"/data": ("1t", "1t")},
+            "cliu797": {"/data": ("1t", "1t")},
         },
     },
 

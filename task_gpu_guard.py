@@ -82,7 +82,10 @@ def main() -> None:
                 user_gpu_usage[username]["procs"].append(proc)
                 user_gpu_usage[username]["gpus"].update(gpus)
 
-            mem_gb = proc.info["memory_info"].rss / (1024 ** 3)
+            mem_info = proc.info["memory_info"]
+            if mem_info is None:
+                continue
+            mem_gb = mem_info.rss / (1024 ** 3)
             if mem_gb > mem_limit_gb and pid not in slurm_pids:
                 _kill_proc(proc, f"Memory {mem_gb:.2f} GB > {mem_limit_gb} GB, not in Slurm")
         except (psutil.NoSuchProcess, psutil.AccessDenied):
