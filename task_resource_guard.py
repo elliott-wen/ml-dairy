@@ -198,45 +198,60 @@ def main() -> None:
 
     logger.info("Checking %d running job(s).", len(jobs))
 
+    # --- Per-job wall-time check (not aggregated) ---
     for job in jobs:
         job_id = job["job_id"]
         user   = job["user"]
-
         try:
             if is_user_in_group(user, CSML_ADMINS_GROUP):
                 continue
-
-            # GPU
-            if job["gpus"] > max_gpus:
-                _cancel_job(job_id, user,
-                    f"allocated {job['gpus']} GPU(s), limit is {max_gpus}")
-                continue
-
-            # CPU
-            if job["cpus"] > max_cpus:
-                _cancel_job(job_id, user,
-                    f"allocated {job['cpus']} CPU(s), limit is {max_cpus}")
-                continue
-
-            # Allocated memory (from squeue)
-            if job["mem_mb"] > max_mem_mb:
-                _cancel_job(job_id, user,
-                    f"allocated {job['mem_mb']:.0f} MB, limit is {max_mem_mb:.0f} MB")
-                continue
-
-            # Live RSS memory (from sstat) — catches jobs that grow after submission
-            live_mem = _sstat_mem_mb(job_id)
-            if live_mem > max_mem_mb:
-                _cancel_job(job_id, user,
-                    f"RSS {live_mem:.0f} MB exceeds limit of {max_mem_mb:.0f} MB")
-                continue
-
-            # Wall time
             if job["elapsed"] > max_time_min:
                 _cancel_job(job_id, user,
                     f"elapsed {job['elapsed']:.0f} min exceeds limit of {max_time_min} min "
                     f"({cfg['max_time_days']} days)")
+        except Exception as e:
+            logger.error("Error checking wall time for job %s (user %s): %s", job_id, user, e)
+
+    # --- Per-user aggregated resource check ---
+    user_jobs: dict = {}
+    for job in jobs:
+        user = job["user"]
+        try:
+            if is_user_in_group(user, CSML_ADMINS_GROUP):
                 continue
+        except Exception as e:
+            logger.error("Error checking admin status for user %s: %s", user, e)
+            continue
+        if user not in user_jobs:
+            user_jobs[user] = []
+        user_jobs[user].append(job)
+
+    for user, ujobs in user_jobs.items():
+        try:
+            total_gpus = sum(j["gpus"] for j in ujobs)
+            total_cpus = sum(j["cpus"] for j in ujobs)
+            total_mem  = sum(j["mem_mb"] for j in ujobs)
+
+            # Live RSS across all user jobs
+            total_live_mem = sum(_sstat_mem_mb(j["job_id"]) for j in ujobs)
+
+            violation = None
+            if total_gpus > max_gpus:
+                violation = f"total GPUs {total_gpus} exceeds limit of {max_gpus}"
+            elif total_cpus > max_cpus:
+                violation = f"total CPUs {total_cpus} exceeds limit of {max_cpus}"
+            elif total_mem > max_mem_mb:
+                violation = (f"total allocated memory {total_mem:.0f} MB "
+                             f"exceeds limit of {max_mem_mb:.0f} MB")
+            elif total_live_mem > max_mem_mb:
+                violation = (f"total RSS {total_live_mem:.0f} MB "
+                             f"exceeds limit of {max_mem_mb:.0f} MB")
+
+            if violation:
+                logger.warning("User '%s' %s — cancelling all %d job(s).",
+                               user, violation, len(ujobs))
+                for job in ujobs:
+                    _cancel_job(job["job_id"], user, violation)
 
         except Exception as e:
-            logger.error("Error checking job %s (user %s): %s", job_id, user, e)
+            logger.error("Error checking aggregated resources for user %s: %s", user, e)
