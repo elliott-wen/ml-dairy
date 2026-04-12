@@ -248,8 +248,21 @@ def main() -> None:
                              f"exceeds limit of {max_mem_mb:.0f} MB")
 
             if violation:
-                logger.warning("User '%s' %s — cancelling all %d job(s).",
-                               user, violation, len(ujobs))
+                job_summary = ", ".join(
+                    f"{j['job_id']}(gpus={j['gpus']} cpus={j['cpus']} mem={j['mem_mb']:.0f}MB)"
+                    for j in ujobs
+                )
+                logger.warning(
+                    "User '%s' exceeds limits — %s. "
+                    "Totals: gpus=%d/%d cpus=%d/%d alloc_mem=%.0f/%.0fMB live_mem=%.0f/%.0fMB. "
+                    "Jobs: [%s]",
+                    user, violation,
+                    total_gpus, max_gpus,
+                    total_cpus, max_cpus,
+                    total_mem, max_mem_mb,
+                    total_live_mem, max_mem_mb,
+                    job_summary,
+                )
                 for job in ujobs:
                     _cancel_job(job["job_id"], user, violation)
 
