@@ -30,7 +30,7 @@ TASK_CONFIG = {
     # setting quotas for users that are about to be removed.
     "user_dirs": {
         "enabled":          True,
-        "interval_seconds": 300,
+        "interval_seconds": 600,
         "inactive_days":    180,  # users with no login beyond this are cleaned up
     },
 

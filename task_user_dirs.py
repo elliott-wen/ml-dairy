@@ -99,7 +99,7 @@ def main() -> None:
                 logger.info("  Inactive: %s (UID %d) last=%s", username, pw.pw_uid, lastlog)
             except KeyError:
                 home_dir = os.path.join("/home", username)
-                logger.warning("User '%s' not in passwd; using fallback home %s", username, home_dir)
+                #logger.warning("User '%s' not in passwd; using fallback home %s", username, home_dir)
 
             for path in (home_dir, os.path.join(DATA_DIR, username)):
                 try:
