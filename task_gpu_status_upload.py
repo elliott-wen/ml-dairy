@@ -16,7 +16,6 @@ from utils import get_logger
 
 logger = get_logger(__name__)
 
-_PROXY = "http://squid.auckland.ac.nz:3128"
 _ENDPOINT = "https://ml.elliottwen.info/gpu"
 _APP_ID = "4a3e71af60a8e2b364941b6b58037dca"
 
@@ -107,13 +106,11 @@ def main() -> None:
         "user":      _user_usage_info(),
     }
 
-    proxy = cfg.get("proxy", _PROXY)
     try:
         response = requests.post(
             cfg.get("endpoint", _ENDPOINT),
             data=json.dumps(payload),
             headers={"app-id": cfg.get("app_id", _APP_ID)},
-            proxies={"https": proxy, "http": proxy},
             timeout=15,
         )
         response.raise_for_status()

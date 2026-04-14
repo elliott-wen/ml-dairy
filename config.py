@@ -50,7 +50,6 @@ TASK_CONFIG = {
         # Optional overrides (defaults match the original script):
         # "endpoint": "https://ml.elliottwen.info/gpu",
         # "app_id":   "4a3e71af60a8e2b364941b6b58037dca",
-        # "proxy":    "http://squid.auckland.ac.nz:3128",
     },
 
     # ── Disk quotas ──────────────────────────────────────────────────────────

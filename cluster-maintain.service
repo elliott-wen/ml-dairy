@@ -6,6 +6,8 @@ After=network.target
 Type=simple
 User=root
 WorkingDirectory=/home/jwen929/maintain
+Environment="HTTP_PROXY=http://squid.auckland.ac.nz:3128"
+Environment="HTTPS_PROXY=http://squid.auckland.ac.nz:3128"
 ExecStart=/usr/bin/python3.12 /home/jwen929/maintain/main.py
 Restart=on-failure
 RestartSec=30
