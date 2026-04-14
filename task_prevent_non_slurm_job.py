@@ -11,7 +11,7 @@ import psutil
 from config import TASK_CONFIG
 from utils import CSML_ADMINS_GROUP, MIN_UID, get_logger, get_username, is_user_in_group
 
-logger = get_logger(__name__)
+logger = get_logger("task_prevent_non_slurm_job")
 
 
 def _get_slurm_managed_pids() -> set:
@@ -59,7 +59,7 @@ def _kill_proc(proc: psutil.Process, reason: str) -> None:
 
 
 def main() -> None:
-    cfg = TASK_CONFIG["gpu_guard"]
+    cfg = TASK_CONFIG["prevent_non_slurm_job"]
     mem_limit_gb = cfg["mem_limit_gb"]
     cpu_limit_pct = cfg["cpu_limit_pct"]
 

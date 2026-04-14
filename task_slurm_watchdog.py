@@ -7,7 +7,7 @@ import subprocess
 
 from utils import get_logger
 
-logger = get_logger(__name__)
+logger = get_logger("task_slurm_watchdog")
 
 
 def _is_slurmctld_active() -> bool:

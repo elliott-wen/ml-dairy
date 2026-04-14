@@ -14,10 +14,10 @@ TASK_CONFIG = {
         "new_nice":         19,     # target niceness value (max = 19)
     },
 
-    # ── GPU / Slurm guard ────────────────────────────────────────────────────
+    # ── Non-Slurm job prevention ─────────────────────────────────────────────
     # Kills processes using GPU, excessive CPU, or excessive memory
     # that are not managed by Slurm.
-    "gpu_guard": {
+    "prevent_non_slurm_job": {
         "enabled":          True,
         "interval_seconds": 30,
         "mem_limit_gb":     16,     # RSS threshold before killing (GB)
@@ -34,21 +34,9 @@ TASK_CONFIG = {
         "inactive_days":    180,  # users with no login beyond this are cleaned up
     },
 
-    # ── Slurm job resource guard ─────────────────────────────────────────────
-    # Polls running jobs and cancels any that exceed resource limits.
-    # Replaces the fragile Lua job_submit hook with an async polling approach.
-    "resource_guard": {
-        "enabled":          True,
-        "interval_seconds": 10,
-        "max_gpus":         2,
-        "max_cpus":         32,
-        "max_mem_gb":       128,
-        "max_time_days":    3,
-    },
-
-    # ── Slurm node resume ────────────────────────────────────────────────────
+    # ── Slurm watchdog ───────────────────────────────────────────────────────
     # Resumes nodes stuck in draining state if slurmctld is running.
-    "slurm_resume": {
+    "slurm_watchdog": {
         "enabled":          True,
         "interval_seconds": 60,
     },
